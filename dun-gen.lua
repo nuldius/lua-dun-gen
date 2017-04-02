@@ -18,8 +18,8 @@ end
 -- Returns a bool of whether rooms are done with placement
 local function roomsDone(rooms)
     local noOverlaps = true
-    for a in pairs(rooms) do
-        for b in pairs(rooms) do
+    for _, a in ipairs(rooms) do
+        for _, b in ipairs(rooms) do
             if a ~= b and overlaps(a, b) then
                 noOverlaps = false
             end
@@ -79,9 +79,9 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
 
         -- Systematically reposition the rooms apart
         -- For each room...
-        for a in pairs(d.rooms) do
+        for _, a in ipairs(d.rooms) do
             -- Find the first (closest) overlapping room
-            for b in pairs(d.rooms) do
+            for _, b in ipairs(d.rooms) do
                 if a ~= b and overlaps(a, b) then
                     -- Move room A away from room B
                     distX = a.cx - b.cx
@@ -89,18 +89,18 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
                     if math.abs(distX) >= math.abs(distY) then
                         -- Reposition to left side
                         if a.x <= 0 then
-                            a.x = b.x - a.w
+                            a.x = b.x - a.w - 1
                         -- Reposition to right side
                         else
-                            a.x = b.x + b.w
+                            a.x = b.x + b.w + 1
                         end
                     else
                         -- Reposition to top side
                         if a.y <= 0 then
-                            a.y = b.y - a.h
+                            a.y = b.y - a.h - 1
                         -- Reposition to bottom side
                         else
-                            a.y = b.y + b.h
+                            a.y = b.y + b.h + 1
                         end
                     end
                     -- Break, as the B room has been found and dealt with
