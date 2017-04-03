@@ -51,6 +51,18 @@ function love.draw()
         love.graphics.rectangle("line", finalX, finalY, finalW, finalH)
     end
 
+    -- Draw the hallways
+    for i, v in ipairs(dun.hallways) do
+        local finalX = (v.x * TILE_SIZE) + love.graphics.getWidth()/2
+        local finalY = (v.y * TILE_SIZE) + love.graphics.getHeight()/2
+        local finalW = v.w * TILE_SIZE
+        local finalH = v.h * TILE_SIZE
+
+        -- Draw the hallway fill
+        love.graphics.setColor(127, 127, 255)
+        love.graphics.rectangle("fill", finalX, finalY, finalW, finalH)
+    end
+
     -- Draw informative text
     love.graphics.setColor(255, 255, 255)
     love.graphics.print("Press 'G' to regenerate the dungeon.", 0, 0)

@@ -41,6 +41,46 @@ local function makeRoom(sizeMin, sizeMax)
     return r
 end
 
+-- Makes and returns a new hallway struct from roomA to roomB
+-- FIXME: Totally broken/unfinished right now
+local function makeHallway(roomA, roomB)
+    local h = {}
+    h.x = 0
+    h.y = 0
+    h.w = 0
+    h.h = 0
+
+    -- Start with the furthest distance axis
+    local xDist = math.abs(roomA.cx - roomB.cx)
+    local yDist = math.abs(roomA.cy - roomB.cy)
+
+    if xDist > yDist then
+        if roomA.cx < roomB.cx then
+            -- Make a hallway going right
+            h.x = roomA.x + roomA.w
+            h.y = math.floor(roomA.cy)
+            h.w = roomB.x - (roomA.x + roomA.w)
+            h.h = 1
+        else
+            -- Make a hallway going left
+            h.x = roomA.x
+            h.y = math.floor(roomA.cy)
+            h.w = roomA.x - (roomB.x + roomB.w)
+            h.h = 1
+        end
+    else
+        if roomA.cy > roomB.cy then
+            -- Make a hallway going down
+            -- TODO
+        else
+            -- Make a hallway going up
+            -- TODO
+        end
+    end
+
+    return h
+end
+
 -- DUNGEON CLASS --
 
 Dungeon = {}
@@ -107,6 +147,15 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
                     break
                 end
             end
+        end
+    end
+
+    -- Generate the hallways
+    -- This should look more natural due to previous room distance sort!
+    d.hallways = {}
+    for i, r in ipairs(d.rooms) do
+        if i ~= #d.rooms then
+            table.insert(d.hallways, makeHallway(d.rooms[i], d.rooms[i+1]))
         end
     end
 
