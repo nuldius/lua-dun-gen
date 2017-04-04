@@ -51,19 +51,9 @@ function love.draw()
         love.graphics.rectangle("line", finalX, finalY, finalW, finalH)
     end
 
-    -- Draw the hallways
-    for i, v in ipairs(dun.hallways) do
-        local finalX = (v.x * TILE_SIZE) + love.graphics.getWidth()/2
-        local finalY = (v.y * TILE_SIZE) + love.graphics.getHeight()/2
-        local finalW = v.w * TILE_SIZE
-        local finalH = v.h * TILE_SIZE
+    -- TODO Draw the hallways
 
-        -- Draw the hallway fill
-        love.graphics.setColor(127, 127, 255)
-        love.graphics.rectangle("fill", finalX, finalY, finalW, finalH)
-    end
-
-    -- Draw informative text
+    -- Print informative text
     love.graphics.setColor(255, 255, 255)
     love.graphics.print("Press 'G' to regenerate the dungeon.", 0, 0)
     love.graphics.print("Amount of rooms: ", 0, 12)
@@ -71,9 +61,9 @@ function love.draw()
     love.graphics.print("Amount of hallways: ", 0, 36)
     love.graphics.print("TODO", 0, 48)
 
-    -- Draw the 2D array output of Dungeon:getBinary()
+    -- Print the dungeon data from Dungeon:getArray()
     love.graphics.setColor(255, 0, 0, 200)
-    for x, xv in ipairs(dun:getBinary()) do
+    for x, xv in ipairs(dun:getArray()) do
         for y, yv in ipairs(xv) do
             love.graphics.print(xv[y], x*11, y*11 + 60)
         end

@@ -42,43 +42,8 @@ local function makeRoom(sizeMin, sizeMax)
 end
 
 -- Makes and returns a new hallway struct from roomA to roomB
--- FIXME: Totally broken/unfinished right now
 local function makeHallway(roomA, roomB)
-    local h = {}
-    h.x = 0
-    h.y = 0
-    h.w = 0
-    h.h = 0
-
-    -- Start with the furthest distance axis
-    local xDist = math.abs(roomA.cx - roomB.cx)
-    local yDist = math.abs(roomA.cy - roomB.cy)
-
-    if xDist > yDist then
-        if roomA.cx < roomB.cx then
-            -- Make a hallway going right
-            h.x = roomA.x + roomA.w
-            h.y = math.floor(roomA.cy)
-            h.w = roomB.x - (roomA.x + roomA.w)
-            h.h = 1
-        else
-            -- Make a hallway going left
-            h.x = roomA.x
-            h.y = math.floor(roomA.cy)
-            h.w = roomA.x - (roomB.x + roomB.w)
-            h.h = 1
-        end
-    else
-        if roomA.cy > roomB.cy then
-            -- Make a hallway going down
-            -- TODO
-        else
-            -- Make a hallway going up
-            -- TODO
-        end
-    end
-
-    return h
+    -- TODO
 end
 
 -- DUNGEON CLASS --
@@ -150,55 +115,55 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
         end
     end
 
-    -- Generate the hallways
-    -- This should look more natural due to previous room distance sort!
-    d.hallways = {}
-    for i, r in ipairs(d.rooms) do
-        if i ~= #d.rooms then
-            table.insert(d.hallways, makeHallway(d.rooms[i], d.rooms[i+1]))
-        end
-    end
-
-    return d
-end
-
--- Returns a 2D number array where 0 = walkable and 1 = non-walkable
-function Dungeon:getBinary()
-    -- Use room info to make the array's width and height
+    -- Use room info to make the dungeon output array's width and height
     local left, right, top, bottom = 0, 0, 0, 0
-    for i, r in ipairs(self.rooms) do
-        if left > r.x then left = r.x end
-        if right < r.x + r.w then right = r.x + r.w end
-        if top > r.y then top = r.y end
-        if bottom < r.y + r.h then bottom = r.y + r.h end
-    end
-    local arrayWidth = -(left - right)
-    local arrayHeight = -(top - bottom)
-
-    -- Make the base 2D array filled with 1's (walls)
-    local a = {}
-    for x = 1, arrayWidth+2 do
-        a[x] = {}
-        for y = 1, arrayHeight+2 do
-            a[x][y] = 1
+    for i, r in ipairs(d.rooms) do
+        if left > r.x then
+            left = r.x
+        end
+        if right < r.x + r.w then
+            right = r.x + r.w
+        end
+        if top > r.y then
+            top = r.y
+        end
+        if bottom < r.y + r.h then
+            bottom = r.y + r.h
         end
     end
+    d.arrayWidth = -(left - right)
+    d.arrayHeight = -(top - bottom)
 
-    -- Make new array with rooms in positive space rather than central space
+    -- Remake room array in positive space rather than central space
+    -- NOTE that cx/cy are unneeded and not included in the new room structs
     newRooms = {}
-    for i, r in ipairs(self.rooms) do
+    for i, r in ipairs(d.rooms) do
         newRooms[i] = {}
         newRooms[i].w = r.w
         newRooms[i].h = r.h
         newRooms[i].x = r.x + -left + 1
         newRooms[i].y = r.y + -top + 1
     end
+    d.rooms = newRooms
 
-    -- TODO (maybe): Move all code before this to the generation loop
-    -- newRooms should be the actual rooms array... probably. :DDDD
+    -- TODO Generate the hallways
+
+    return d
+end
+
+-- Returns a 2D number array where 0 = walkable and 1 = non-walkable
+function Dungeon:getArray()
+    -- Make the base 2D array filled with 1's (walls)
+    local a = {}
+    for x = 1, self.arrayWidth+2 do
+        a[x] = {}
+        for y = 1, self.arrayHeight+2 do
+            a[x][y] = 1
+        end
+    end
 
     -- Using the room rects, carve out 0's in the array
-    for i, r in ipairs(newRooms) do
+    for i, r in ipairs(self.rooms) do
         for x = r.x + 1, r.x + r.w do
             for y = r.y + 1, r.y + r.h do
                 a[x][y] = 0 -- FIXME: trying to index a nil value?
@@ -210,8 +175,6 @@ function Dungeon:getBinary()
 end
 
 -- Returns details of what tiles are in what rooms
--- NOTE: For this to be useful, rooms must be in positive space, like in ...
--- getBinary().
 function Dungeon:getRooms()
     -- TODO
 end
