@@ -30,7 +30,7 @@ function love.draw()
         local finalH = v.h * TILE_SIZE
 
         -- Draw the room fill
-        love.graphics.setColor(127, 127, 127)
+        love.graphics.setColor(0, 255, 0)
         love.graphics.rectangle("fill", finalX, finalY, finalW, finalH)
 
         -- Draw grid lines so individual tiles are visible
@@ -70,4 +70,12 @@ function love.draw()
     love.graphics.print(#dun.rooms, 0, 24)
     love.graphics.print("Amount of hallways: ", 0, 36)
     love.graphics.print("TODO", 0, 48)
+
+    -- Draw the 2D array output of Dungeon:getBinary()
+    love.graphics.setColor(255, 0, 0, 200)
+    for x, xv in ipairs(dun:getBinary()) do
+        for y, yv in ipairs(xv) do
+            love.graphics.print(xv[y], x*11, y*11 + 60)
+        end
+    end
 end

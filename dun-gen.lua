@@ -96,14 +96,14 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
 
     -- Spawn rooms
     d.rooms = {}
-    for i = 0, math.random(roomsMin, roomsMax) do
+    for i = 1, math.random(roomsMin, roomsMax) do
         table.insert(d.rooms, makeRoom(sizeMin, sizeMax))
     end
 
     -- Position rooms
     while not roomsDone(d.rooms) do
         -- Sort room array by distance to center
-        for _ = 0, (#d.rooms * #d.rooms) do
+        for _ = 1, (#d.rooms * #d.rooms) do
             for i, r in ipairs(d.rooms) do
                 if i <= #d.rooms - 2 then
                     local this = dist(d.rooms[i].x, d.rooms[i].y, 0, 0)
@@ -164,7 +164,48 @@ end
 
 -- Returns a 2D number array where 0 = walkable and 1 = non-walkable
 function Dungeon:getBinary()
-    -- TODO
+    -- Use room info to make the array's width and height
+    local left, right, top, bottom = 0, 0, 0, 0
+    for i, r in ipairs(self.rooms) do
+        if left > r.x then left = r.x end
+        if right < r.x + r.w then right = r.x + r.w end
+        if top > r.y then top = r.y end
+        if bottom < r.y + r.h then bottom = r.y + r.h end
+    end
+    local arrayWidth = -(left - right)
+    local arrayHeight = -(top - bottom)
+
+    -- Make the base 2D array filled with 1's (walls)
+    local a = {}
+    for x = 1, arrayWidth + 2 do
+        a[x] = {}
+        for y = 1, arrayHeight + 2 do
+            a[x][y] = 1
+        end
+    end
+
+    -- Make new array with rooms in positive space rather than central space
+    newRooms = {}
+    for i, r in ipairs(self.rooms) do
+        newRooms[i] = {}
+        newRooms[i].x = r.x + math.floor(arrayWidth / 2)
+        newRooms[i].y = r.y + math.floor(arrayHeight / 2)
+        newRooms[i].w = r.w
+        newRooms[i].h = r.h
+        newRooms[i].cx = r.cx + math.floor(arrayWidth / 2)
+        newRooms[i].cy = r.cy + math.floor(arrayHeight / 2)
+    end
+
+    -- Using the room rects, carve out 0's in the array
+    for i, r in ipairs(newRooms) do
+        for x = r.x, r.x + r.w do
+            for y = r.y, r.y + r.h do
+                a[x][y] = 0 -- FIXME: trying to index a nil value?
+            end
+        end
+    end
+
+    return a
 end
 
 -- Returns details of what tiles are in what rooms
