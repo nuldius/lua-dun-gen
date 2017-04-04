@@ -177,9 +177,9 @@ function Dungeon:getBinary()
 
     -- Make the base 2D array filled with 1's (walls)
     local a = {}
-    for x = 1, arrayWidth + 2 do
+    for x = 1, arrayWidth+2 do
         a[x] = {}
-        for y = 1, arrayHeight + 2 do
+        for y = 1, arrayHeight+2 do
             a[x][y] = 1
         end
     end
@@ -188,18 +188,19 @@ function Dungeon:getBinary()
     newRooms = {}
     for i, r in ipairs(self.rooms) do
         newRooms[i] = {}
-        newRooms[i].x = r.x + math.floor(arrayWidth / 2)
-        newRooms[i].y = r.y + math.floor(arrayHeight / 2)
         newRooms[i].w = r.w
         newRooms[i].h = r.h
-        newRooms[i].cx = r.cx + math.floor(arrayWidth / 2)
-        newRooms[i].cy = r.cy + math.floor(arrayHeight / 2)
+        newRooms[i].x = r.x + -left + 1
+        newRooms[i].y = r.y + -top + 1
     end
+
+    -- TODO (maybe): Move all code before this to the generation loop
+    -- newRooms should be the actual rooms array... probably. :DDDD
 
     -- Using the room rects, carve out 0's in the array
     for i, r in ipairs(newRooms) do
-        for x = r.x, r.x + r.w do
-            for y = r.y, r.y + r.h do
+        for x = r.x + 1, r.x + r.w do
+            for y = r.y + 1, r.y + r.h do
                 a[x][y] = 0 -- FIXME: trying to index a nil value?
             end
         end
@@ -209,6 +210,8 @@ function Dungeon:getBinary()
 end
 
 -- Returns details of what tiles are in what rooms
+-- NOTE: For this to be useful, rooms must be in positive space, like in ...
+-- getBinary().
 function Dungeon:getRooms()
     -- TODO
 end
