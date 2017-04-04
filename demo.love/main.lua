@@ -1,9 +1,9 @@
 require "dun-gen"
 
-ROOMS_MIN   = 3     -- Minimum number of rooms generated
-ROOMS_MAX   = 8    -- Maximum number of rooms generated
-SIZE_MIN    = 6     -- Minimum tiles across in a room
-SIZE_MAX    = 8     -- Maximum tiles across in a room
+ROOMS_MIN   = 9     -- Minimum number of rooms generated
+ROOMS_MAX   = 15    -- Maximum number of rooms generated
+SIZE_MIN    = 5     -- Minimum tiles across in a room
+SIZE_MAX    = 7     -- Maximum tiles across in a room
 
 TILE_SIZE = 8       -- Pixel size of each tile
 
