@@ -9,7 +9,7 @@ end
 
 -- Returns if the two rooms are overlapping
 local function overlaps(a, b)
-    return (a.x < b.x + b.w and -- FIXME Error: ./dun-gen.lua:12: attempt to index local 'a' (a number value)
+    return (a.x < b.x + b.w and
         a.x + a.w > b.x and
         a.y < b.y + b.h and
         a.y + a.h > b.y)
@@ -32,18 +32,14 @@ end
 local function makeRoom(sizeMin, sizeMax)
     local r = {}
     -- x/y/width/height/centerX/centerY
-    r.x = math.random(-2, 2)
-    r.y = math.random(-2, 2)
-    r.w = math.random(sizeMin, sizeMax)
-    r.h = math.random(sizeMin, sizeMax)
+    r.x = math.random(-1, 1)
+    r.y = math.random(-1, 1)
+    -- NOTE: the +1's are required, as the algo shrinks rooms by 1 later
+    r.w = math.random(sizeMin + 1, sizeMax + 1)
+    r.h = math.random(sizeMin + 1, sizeMax + 1)
     r.cx = r.x + r.w/2
     r.cy = r.y + r.y/2
     return r
-end
-
--- Makes and returns a new hallway struct from roomA to roomB
-local function makeHallway(roomA, roomB)
-    -- TODO
 end
 
 -- DUNGEON CLASS --
@@ -94,18 +90,18 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
                     if math.abs(distX) >= math.abs(distY) then
                         -- Reposition to left side
                         if a.x <= 0 then
-                            a.x = b.x - a.w - 1
+                            a.x = b.x - a.w
                         -- Reposition to right side
                         else
-                            a.x = b.x + b.w + 1
+                            a.x = b.x + b.w
                         end
                     else
                         -- Reposition to top side
                         if a.y <= 0 then
-                            a.y = b.y - a.h - 1
+                            a.y = b.y - a.h
                         -- Reposition to bottom side
                         else
-                            a.y = b.y + b.h + 1
+                            a.y = b.y + b.h
                         end
                     end
                     -- Break, as the B room has been found and dealt with
@@ -113,6 +109,12 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
                 end
             end
         end
+    end
+
+    -- To stop rooms from touching, decrease their width and height by 1
+    for _, r in ipairs(d.rooms) do
+        r.w = r.w - 1
+        r.h = r.h - 1
     end
 
     -- Use room info to make the dungeon output array's width and height
@@ -135,7 +137,6 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
     d.arrayHeight = -(top - bottom)
 
     -- Remake room array in positive space rather than central space
-    -- NOTE that cx/cy are unneeded and not included in the new room structs
     newRooms = {}
     for i, r in ipairs(d.rooms) do
         newRooms[i] = {}
@@ -145,8 +146,6 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
         newRooms[i].y = r.y + -top + 1
     end
     d.rooms = newRooms
-
-    -- TODO Generate the hallways
 
     return d
 end
@@ -166,20 +165,10 @@ function Dungeon:getArray()
     for i, r in ipairs(self.rooms) do
         for x = r.x + 1, r.x + r.w do
             for y = r.y + 1, r.y + r.h do
-                a[x][y] = 0 -- FIXME: trying to index a nil value?
+                a[x][y] = 0
             end
         end
     end
 
     return a
-end
-
--- Returns details of what tiles are in what rooms
-function Dungeon:getRooms()
-    -- TODO
-end
-
--- Returns details of what tiles are in what hallways
-function Dungeon:getHallways()
-    -- TODO
 end

@@ -8,12 +8,11 @@ A simple Lua library for randomly generating grid-based dungeon maps that appear
 - TODO
 
 ## To-do
-- Hallway generation
 - Dungeon:getRooms()
-- Dungeon:getHallways()
+- Hallway generation
 
 ## Issues
-- Rooms occasionally generate connected to each other
+- WIP
 
 ## How it works
 The goal in mind is producing dungeons that look more handcrafted rather than noisy. Some inspiration can be taken from cyclical dungeon generation and TinyKeep's generation algorithm. To achieve this, I've used the following method:
