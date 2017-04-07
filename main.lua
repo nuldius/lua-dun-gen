@@ -36,8 +36,10 @@ function love.draw()
 
             if xv[y] == 0 then
                 love.graphics.setColor(60, 60, 220)
-            else
+            elseif xv[y] == 1 then
                 love.graphics.setColor(50, 50, 120)
+            else
+                love.graphics.setColor(80, 80, 220)
             end
             love.graphics.print(xv[y], x*11, y*11 + 60)
         end

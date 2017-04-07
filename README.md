@@ -9,7 +9,7 @@ A simple Lua library for randomly generating grid-based dungeon maps that appear
 
 ## To-do
 - Dungeon:getRooms()
-- Hallway generation
+- Finish the "How it works" section of this readme
 
 ## Issues
 - WIP

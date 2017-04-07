@@ -137,7 +137,7 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
     d.arrayHeight = -(top - bottom)
 
     -- Remake room array in positive space rather than central space
-    newRooms = {}
+    local newRooms = {}
     for i, r in ipairs(d.rooms) do
         newRooms[i] = {}
         newRooms[i].w = r.w
@@ -151,6 +151,9 @@ function Dungeon:new(roomsMin, roomsMax, sizeMin, sizeMax)
 end
 
 -- Returns a 2D number array where 0 = walkable and 1 = non-walkable
+-- TODO: Move a lot of this to :new() somehow!
+-- Every time getArray is called it carves out hallways etc
+-- Obviously this causes problemos
 function Dungeon:getArray()
     -- Make the base 2D array filled with 1's (walls)
     local a = {}
@@ -166,6 +169,80 @@ function Dungeon:getArray()
         for x = r.x + 1, r.x + r.w do
             for y = r.y + 1, r.y + r.h do
                 a[x][y] = 0
+            end
+        end
+    end
+
+    -- Make up for the array creation and move all rooms +1 on both axis
+    -- Without this, Dungeon.getRooms() room coordinates would be off by 1!
+    -- Read this function's initial comment for why this is inactive
+    -- IDEA: Maybe move all rooms -1 before carving then +1 again after? iunno
+    -- FIXME
+    --for i, r in ipairs(self.rooms) do
+        --r.x = r.x + 1
+        --r.y = r.y + 1
+    --end
+
+    -- Sort room array by distance to TOP LEFT (0, 0)
+    for _ = 1, (#self.rooms * #self.rooms) do
+        for i, r in ipairs(self.rooms) do
+            if i <= #self.rooms - 2 then
+                local this = dist(self.rooms[i].x, self.rooms[i].y, 0, 0)
+                local next = dist(self.rooms[i+1].x, self.rooms[i+1].y, 0, 0)
+                if this < next then
+                    local temp = self.rooms[i]
+                    self.rooms[i] = self.rooms[i+1]
+                    self.rooms[i+1] = temp
+                end
+            end
+        end
+    end
+
+    -- Carve out hallways to all of the rooms
+    -- IDEA: carveHorizontal() and carveVertical() functions?
+    -- Cause let's be honest, this is really ugly redundant code
+    for i = 1, #self.rooms-1 do
+        local ra = self.rooms[i]
+        local racx = ra.x + math.floor(ra.w/2)
+        local racy = ra.y + math.floor(ra.h/2)
+        local rb = self.rooms[i+1]
+        local rbcx = rb.x + math.floor(rb.w/2)
+        local rbcy = rb.y + math.floor(rb.h/2)
+        -- Start right
+        if racx < rbcx then
+            local lastX = 0
+            for x = racx, rbcx do
+                a[x][racy] = 0
+                lastX = x
+            end
+            -- Go down
+            if racy < rbcy then
+                for y = racy, rbcy do
+                    a[lastX][y] = 0
+                end
+            -- Go up
+            else
+                for y = rbcy, racy do
+                    a[lastX][y] = 0
+                end
+            end
+        -- Start left
+        else
+            local lastX = 0
+            for x = rbcx, racx do
+                a[x][rbcy] = 0
+                lastX = x
+            end
+            -- Go down
+            if racy < rbcy then
+                for y = racy, rbcy do
+                    a[lastX][y] = 0
+                end
+            -- Go up
+            else
+                for y = rbcy, racy do
+                    a[lastX][y] = 0
+                end
             end
         end
     end
