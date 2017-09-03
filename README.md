@@ -2,17 +2,17 @@
 A simple Lua library for randomly generating grid-based dungeon maps that appear handcrafted
 
 ## Features
-- A Love2D script for demonstrating the library
+- A Love2D script for demonstrating the library (main.lua)
 
 ## Usage
 - TODO
 
 ## To-do
-- Dungeon:getRooms()
-- Finish the "How it works" section of this readme
+- Dungeon:getRooms() (returns an array of rectangles)
+- Rewrite "class" functionality in favor of... not class functionality. :D
 
 ## Issues
-- WIP
+- Occasionally, rooms will touch. (May or may not be a "problem")
 
 ## How it works
 The goal in mind is producing dungeons that look more handcrafted rather than noisy. Some inspiration can be taken from cyclical dungeon generation and TinyKeep's generation algorithm. To achieve this, I've used the following method:
@@ -26,4 +26,4 @@ The goal in mind is producing dungeons that look more handcrafted rather than no
             * IF A and B are overlapping and A and B are not the same room:
                 * Move A away from B on the furthest overlap axis
             * Break out of the loop, as we were only comparing with the closest overlapping room of A
-* TODO: Hallway generation
+* Place hallways in order of distance from one part of the screen, randomize vertical vs horizontal start direction
